@@ -1,23 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-body{
+@font-face {
+    font-family: 'Mozilla Headline';
+    src: url('https://www.mozilla.org/media/protocol/fonts/mozilla-headline/MozillaHeadline-Regular.f0e5390a8c6a.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mozilla Headline';
+    src: url('https://www.mozilla.org/media/protocol/fonts/mozilla-headline/MozillaHeadline-SemiBold.bccc6c46c123.woff2') format('woff2');
+    font-weight: 600;
+    font-display: swap;
+}
+
+body {
     margin: 0;
     padding: 0;
 }
 
-.container{
-    background-color: #15141A;
-    display: flex;
-    height: 500px;
-    padding-left: 130px;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    padding-top: 100px;
-    position: relative;
-    overflow: hidden;
-}
-
-.topo{
+/* ── CABEÇALHO ── */
+.topo {
     display: flex;
     height: 60px;
     align-items: center;
@@ -27,51 +30,83 @@ body{
     flex-wrap: nowrap;
 }
 
-.menu{
+/* Logo do cabeçalho (imagem SVG fornecida) */
+.mozzila {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo_header {
+    height: 28px;
+    width: auto;
+    fill: #000;
+}
+
+.menu {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 50px;
 }
 
-.fonte{
+.fonte {
     font-size: 18px;
     font-weight: 500;
     color: black;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.fonte:hover{
+.fonte:hover {
     text-decoration: underline;
 }
 
+/* ── CONTAINER PRINCIPAL ── */
+.container {
+    background-color: #15141A;
+    display: flex;
+    height: 700px;
+    padding-left: 130px;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    padding-top: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── CONTEÚDO ESQUERDO ── */
 .boas-vindas {
     color: #ffffff;
     font-size: 115px;
     font-weight: 600;
-    margin: 0; 
-    margin-bottom: 24px; 
+    font-family: 'Mozilla Headline', 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    margin-bottom: 24px;
 }
 
 .texto_desde {
     color: #ffffff;
-    font-family: 'Inter', Arial, sans-serif; 
+    font-family: 'Inter', Arial, sans-serif;
     font-size: 22px;
     font-weight: 400;
-    margin: 0; 
-    max-width: 800px; 
+    margin: 0;
+    max-width: 800px;
     line-height: 1.5;
 }
 
-.texto_saiba{
+.texto_saiba {
     color: #ffffff;
+    font-family: 'Mozilla Headline', 'Helvetica Neue', Arial, sans-serif;
+    display: inline-block;
     margin-top: 50px;
     font-size: 35px;
     font-weight: 500;
     text-decoration: underline;
 }
 
+/* ── ÁREA DIREITA ── */
 .area_direita {
     position: absolute;
     top: 70px;
@@ -85,12 +120,15 @@ body{
 
 .botao_animacao {
     color: white;
+    background: transparent;
     border: 1px solid #555;
     width: fit-content;
-    padding: 4px 8px;
+    padding: 8px;
     font-family: 'Inter', Arial, sans-serif;
     font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    line-height: 0.75;
 
     margin-left: auto;
     display: flex;
@@ -99,7 +137,8 @@ body{
 }
 
 .play {
-    font-size: 20px;
+    font-size: 16px;
+    line-height: 1;
 }
 
 .botao_animacao:hover {
@@ -112,6 +151,7 @@ body{
     height: auto;
 }
 
+/* ── RECORTE ── */
 .recorte {
     position: absolute;
     bottom: 0;
@@ -122,97 +162,59 @@ body{
 .nivel {
     position: absolute;
     bottom: 0;
-    background-color: black;
+    background-color: white;
 }
 
-.nivel1 {
-    left: 0;
-    width: 25%;
-    height: 70px;
-}
+.nivel1 { left: 0;   width: 25%; height: 70px;  }
+.nivel2 { left: 25%; width: 35%; height: 45px;  }
+.nivel3 { left: 60%; width: 20%; height: 85px;  }
+.nivel4 { right: 0;  width: 20%; height: 120px; }
 
-.nivel2 {
-    left: 25%;
-    width: 35%;
-    height: 45px;
-}
-
-.nivel3 {
-    left: 60%;
-    width: 20%;
-    height: 85px;
-}
-
-.nivel4 {
-    right: 0;
-    width: 20%;
-    height: 120px;
-}
-
-.mozzila{
-    font-size: 24px;
-    font-weight: 800;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.texto_volte{
+/* ── SEÇÃO VOLTE ── */
+.texto_volte {
     font-size: clamp(30px, 8vw, 70px);
     font-weight: 700;
+    font-family: 'Mozilla Headline', 'Helvetica Neue', Arial, sans-serif;
     color: black;
     background: white;
     margin: 0;
     padding: 0px 50px;
 }
 
-
-
+/* ── RESPONSIVO TABLET/MOBILE (até 900px) ── */
 @media (max-width: 900px) {
 
-    /* TOPO */
     .topo {
         justify-content: space-between;
         padding: 0 20px;
         height: 60px;
     }
 
-    /* some com o Mozilla original */
     .mozzila {
-        display: none;
+        display: flex;
     }
 
-    /* cria um único Mozilla */
-    .topo::before {
-        content: "Mozilla";
-        font-size: 24px;
-        font-weight: 800;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    /* esconde menu */
     .fonte {
-        font-weight: 500;
         display: none;
     }
 
-    /* botão menu */
-    .topo::after {
+    .menu::after {
         content: "Menu";
         font-size: 16px;
         font-weight: 500;
         text-decoration: underline;
         color: black;
+        cursor: pointer;
+        font-family: 'Inter', Arial, sans-serif;
     }
 
-    /* CONTAINER */
     .container {
         height: 520px;
         padding-left: 24px;
         padding-top: 80px;
     }
 
-    /* TEXTO */
     .boas-vindas {
-        font-weight: 600;
         font-size: 46px;
         line-height: 1;
         margin-bottom: 18px;
@@ -220,21 +222,19 @@ body{
 
     .texto_desde {
         font-size: 20px;
-        max-width: 280px;
+        max-width: 52%;
         line-height: 1.15;
     }
 
     .texto_saiba {
         font-size: 20px;
         margin-top: 30px;
-        font-weight: 500;
     }
 
-    /* DIREITA */
     .area_direita {
-        top: 25px;
-        right: 18px;
-        gap: 60px;
+        top: 80px;
+        right: 16px;
+        gap: 24px;
         align-items: flex-end;
     }
 
@@ -243,15 +243,50 @@ body{
         padding: 6px 8px;
     }
 
-    /* some com a bandeira */
     .logo_verde {
-        display: none;
+        display: block;
+        width: clamp(70px, 18vw, 130px);
+        height: auto;
     }
 }
 
+/* ── RESPONSIVO SMARTPHONE PEQUENO (até 480px) ── */
+@media (max-width: 480px) {
 
+    .container {
+        height: 480px;
+        padding-left: 18px;
+        padding-top: 60px;
+    }
 
-@font-face {
-    font-family: 'Mozilla Headline';
-    src: url('https://www.mozilla.org/media/fonts/MozillaHeadline-Regular.woff2') format('woff2');
+    .boas-vindas {
+        font-size: 36px;
+        margin-bottom: 14px;
+    }
+
+    .texto_desde {
+        font-size: 16px;
+        max-width: 55%;
+        line-height: 1.2;
+    }
+
+    .texto_saiba {
+        font-size: 16px;
+        margin-top: 20px;
+    }
+
+    .area_direita {
+        top: 60px;
+        right: 12px;
+        gap: 16px;
+    }
+
+    .botao_animacao {
+        font-size: 11px;
+        padding: 5px 7px;
+    }
+
+    .logo_verde {
+        width: clamp(55px, 16vw, 90px);
+    }
 }
