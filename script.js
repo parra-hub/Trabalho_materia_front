@@ -1,31 +1,12 @@
-/* =========================================================================
- * Mozilla x Dev.to — SPA (Single Page Application)
- * Projeto Prático 2 — Programação Web Frontend (UTFPR)
- *
- * Funcionalidades:
- *  - Busca de artigos na API pública do Dev.to (Forem) via Fetch + async/await
- *  - Validação dos campos de busca (não vazio, mínimo 3 caracteres)
- *  - Mensagens de validação amigáveis
- *  - Marcar/desmarcar favoritos
- *  - Persistência dos favoritos em localStorage
- *  - Listagem dos favoritos
- *  - Navegação entre abas sem recarregar a página (SPA)
- *  - Tratamento de erros: rede, HTTP, timeout, resposta vazia/ inválida
- *
- * Stack: JavaScript Vanilla (ES6+). Sem bibliotecas externas.
- * ========================================================================= */
-
 (() => {
     'use strict';
 
-    // ──────────────── Constantes / Configuração ────────────────
     const API_BASE = 'https://dev.to/api/articles';
     const STORAGE_KEY = 'mozilla_devto_favoritos_v1';
     const TIMEOUT_MS = 10000;
     const MIN_QUERY = 3;
     const PER_PAGE = 24;
 
-    // ──────────────── Seletores ────────────────
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -42,14 +23,12 @@
     const contadorAba = $('#contadorAba');
     const secaoApp = $('#appArtigos');
 
-    // ──────────────── Estado ────────────────
     const estado = {
-        aba: 'resultados',         // 'resultados' | 'favoritos'
+        aba: 'resultados',     
         ultimaBusca: '',
-        favoritos: carregarFavoritos(), // Map<id, artigo>
+        favoritos: carregarFavoritos(), 
     };
 
-    // ════════════════ Persistência (localStorage) ════════════════
     function carregarFavoritos() {
         try {
             const bruto = localStorage.getItem(STORAGE_KEY);
@@ -81,15 +60,11 @@
         }
         salvarFavoritos();
         atualizarContadores();
-        // Re-render botão na lista atual + lista de favoritos
         sincronizarBotoesFavoritos();
         renderizarFavoritos();
     }
 
-    // ════════════════ API Dev.to ════════════════
-    /**
-     * Faz uma requisição GET com timeout e tratamento de HTTP/rede.
-     */
+
     async function requisicaoJson(url, { timeout = TIMEOUT_MS } = {}) {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), timeout);
@@ -118,15 +93,9 @@
         }
     }
 
-    /**
-     * Busca artigos no Dev.to. Os parâmetros válidos da API incluem
-     * `tag` (uma tag) e `per_page`. Como uma busca textual livre,
-     * fazemos duas tentativas: por tag (normalizada) e, em paralelo,
-     * uma busca geral; depois filtramos no cliente por título/tags.
-     */
     async function buscarArtigos(termo) {
         const q = termo.trim().toLowerCase();
-        const tag = q.replace(/[^a-z0-9]/g, ''); // tags do dev.to são alfanuméricas
+        const tag = q.replace(/[^a-z0-9]/g, ''); 
 
         const urlTag = `${API_BASE}?tag=${encodeURIComponent(tag)}&per_page=${PER_PAGE}`;
         const urlGeral = `${API_BASE}?per_page=${PER_PAGE}`;
@@ -139,12 +108,10 @@
         const porTag = porTagRes.status === 'fulfilled' ? porTagRes.value : [];
         const gerais = geraisRes.status === 'fulfilled' ? geraisRes.value : [];
 
-        // Se ambas falharam, propaga o primeiro erro
         if (porTagRes.status === 'rejected' && geraisRes.status === 'rejected') {
             throw porTagRes.reason;
         }
 
-        // Combina, deduplica por id e filtra pelo termo
         const mapa = new Map();
         [...porTag, ...gerais].forEach((a) => {
             if (a && a.id != null) mapa.set(String(a.id), a);
@@ -152,9 +119,7 @@
 
         const todos = Array.from(mapa.values());
         const filtrados = todos.filter((a) => combina(a, q));
-
-        // Se nada combinar (busca muito específica), retorna ao menos os
-        // resultados da tag (que já são relevantes ao termo).
+        
         return filtrados.length > 0 ? filtrados : porTag;
     }
 
@@ -165,7 +130,6 @@
         return titulo.includes(q) || desc.includes(q) || tags.includes(q);
     }
 
-    // ════════════════ Validação ════════════════
     function validarBusca(valor) {
         const limpo = valor.trim();
         if (limpo.length === 0) {
@@ -189,7 +153,6 @@
         inputBusca.removeAttribute('aria-invalid');
     }
 
-    // ════════════════ Render ════════════════
     function escapar(str = '') {
         return String(str)
             .replace(/&/g, '&amp;')
@@ -257,13 +220,11 @@
 
     function renderizarLista(container, artigos) {
         container.innerHTML = artigos.map(templateArtigo).join('');
-        // Anexa handlers dos botões de favoritar
         $$('.botao_fav', container).forEach((btn) => {
             const li = btn.closest('.artigo');
             const id = li?.dataset.id;
             if (!id) return;
             btn.addEventListener('click', () => {
-                // Procura o artigo (pode estar nos resultados em memória ou nos favoritos)
                 const artigo = estado.favoritos.get(id) || resultadosCache.get(id);
                 if (artigo) alternarFavorito(artigo);
             });
@@ -311,10 +272,8 @@
         contadorAba.textContent = String(n);
     }
 
-    // ════════════════ Cache em memória dos últimos resultados ════════════════
     const resultadosCache = new Map();
 
-    // ════════════════ Fluxo principal ════════════════
     async function executarBusca(termo) {
         estado.ultimaBusca = termo;
         statusResultados.classList.remove('erro');
@@ -345,7 +304,6 @@
         }
     }
 
-    // ════════════════ Navegação SPA por abas ════════════════
     function trocarAba(aba) {
         estado.aba = aba;
         $$('.aba').forEach((b) => {
@@ -373,7 +331,6 @@
         secaoApp.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ════════════════ Eventos ════════════════
     form.addEventListener('submit', (ev) => {
         ev.preventDefault();
         const { ok, msg, valor } = validarBusca(inputBusca.value);
@@ -416,30 +373,12 @@
 
     window.addEventListener('hashchange', tratarRota);
 
-    // ════════════════ Bootstrap ════════════════
     atualizarContadores();
     renderizarFavoritos();
     tratarRota();
 })();
 
-/* =========================================================================
- * ANIMAÇÃO DA LOGO VERDE (Mozilla) — Vanilla JS
- * -------------------------------------------------------------------------
- * Reproduz, de forma fiel, o comportamento da página inicial da Mozilla,
- * onde as partes da logo entram em cena, se montando até formar o
- * desenho final. Implementada com a Web Animations API (sem setInterval,
- * sem bibliotecas externas).
- *
- * Controles:
- *  - Botão ".botao_animacao":
- *      • clique  -> inicia a animação (texto vira "Pausar animação")
- *      • clique  -> pausa no quadro atual (texto vira "Continuar animação")
- *      • clique  -> retoma exatamente do ponto pausado
- *
- *  - Quando a animação termina um ciclo, ela faz loop suave.
- *
- * Observação: nada do restante do projeto foi alterado.
- * ========================================================================= */
+
 (() => {
     'use strict';
 
@@ -449,32 +388,21 @@
 
     const textoBotao = botao.querySelector('.botao_animacao_texto');
 
-    // Partes da logo, na ordem do SVG:
-    //  0 -> barra vertical esquerda
-    //  1 -> quadrado pequeno
-    //  2 -> retângulo conector (topo)
-    //  3 -> barra horizontal superior
-    //  4 -> polígono em zigue-zague
+
     const partes = Array.from(svg.children);
 
-    // Reproduz a animação oficial da Mozilla: cada peça é "desenhada"
-    // na direção natural do seu traço (wipe), usando scale a partir de
-    // uma origem específica. Nada cai de fora da tela.
-    //
-    // eixo   -> 'x' | 'y'  (qual dimensão cresce)
-    // origem -> ponto fixo da peça enquanto ela cresce
+
     const coreografia = [
-        { eixo: 'y', origem: 'top center',    delay:   0, duracao: 650 }, // barra esquerda desce
-        { eixo: 'xy', origem: 'center',       delay: 380, duracao: 380 }, // quadradinho aparece
-        { eixo: 'y', origem: 'top center',    delay: 480, duracao: 320 }, // conector desce
-        { eixo: 'x', origem: 'left center',   delay: 640, duracao: 520 }, // barra superior wipe →
-        { eixo: 'x', origem: 'left center',   delay: 980, duracao: 780 }, // zigue-zague wipe →
+        { eixo: 'y', origem: 'top center',    delay:   0, duracao: 650 }, 
+        { eixo: 'xy', origem: 'center',       delay: 380, duracao: 380 }, 
+        { eixo: 'y', origem: 'top center',    delay: 480, duracao: 320 }, 
+        { eixo: 'x', origem: 'left center',   delay: 640, duracao: 520 }, 
+        { eixo: 'x', origem: 'left center',   delay: 980, duracao: 780 }, 
     ];
 
     const EASING = 'cubic-bezier(.22,.61,.36,1)';
     const PAUSA_ENTRE_CICLOS = 700;
 
-    // Garante que transform/origem fiquem em relação à própria peça do SVG.
     partes.forEach((el, i) => {
         el.style.transformBox = 'fill-box';
         el.style.transformOrigin = (coreografia[i] || coreografia[0]).origem;
@@ -484,12 +412,12 @@
     function escalaInicial(eixo) {
         if (eixo === 'x')  return 'scale(0, 1)';
         if (eixo === 'y')  return 'scale(1, 0)';
-        return 'scale(0, 0)'; // 'xy'
+        return 'scale(0, 0)'; 
     }
 
-    /** @type {Animation[]} */
+
     let animacoes = [];
-    let estado = 'parada'; // 'parada' | 'rodando' | 'pausada'
+    let estado = 'parada'; 
     let loopTimer = null;
 
     function montarAnimacoes() {
@@ -503,6 +431,8 @@
                     { transform: 'scale(1, 1)',      opacity: 1 },
                 ],
                 { duration: duracao, delay, easing: EASING, fill: 'both' }
+
+                
             );
             anim.pause();
             return anim;
